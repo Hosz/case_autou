@@ -1,46 +1,61 @@
-import os
 from dotenv import load_dotenv
-from transformers import pipeline
-import requests
+import os
+from google import genai
+import json
+import re
 
-load_dotenv() #Para o acesso do TOKEN
+
+load_dotenv()
 
 #Função para classificar o email em produtivo ou improdutivo
-classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
-def class_email(text):
-    categorias = ['Produtivo', 'Improdutivo']
-    result = classifier(text, categorias)
-    result = result['labels'][0]
-    return result
+def email_analysis(text: str) -> dict:
+    print('Passo 1 = analise iniciada.')
+    prompt = f"""
+Você é um assistente especialista em análise de e-mails para a empresa AutoU.
+Sua tarefa é analisar o e-mail fornecido e retornar um objeto JSON.
 
-#Configuração da API
-token_access = os.getenv('HUGGING_FACE_TOKEN')
-API_URL = "https://api-inference.huggingface.co/models/bigscience/bloomz-560m"
-headers = {"Authorization": f"Bearer {token_access}"}
+Sua resposta DEVE SER APENAS o objeto JSON, sem nenhum texto adicional, explicação ou formatação Markdown. Sua resposta deve começar com {{ e terminar com }}.
 
-#Faz uma requisição para a API 
-def query_api(payload):
-    response = requests.post(API_URL, headers=headers, json=payload)
-    return response.json()
+O objeto JSON deve ter duas chaves: "categoria" e "resposta_sugerida".
 
-#Função para gerar uma resposta profissional para o email
-def response_email(categorias):
-    prompt = ''
-    if categorias == 'Produtivo':
-        prompt = f"Gere uma resposta profissional e curta para um e-mail que pede uma atualização de status, por exemplo:"
-    elif categorias == 'Improdutivo':
-        prompt = f"Gere uma resposta curta e educada para um e-mail não urgente, como um agradecimento, por exemplo:"
-    
-    #Aciona a função query adicionando o prompt e definindo um limite de ate 50 novas palavras
-    api_output = query_api({
-        'inputs': prompt,
-        'parameters': {'max_new_tokens': 50}
-    })
-    #Checa se a API não está vazia e se veio em formato de lista
-    if api_output and isinstance(api_output, list):
-        full_text = api_output[0].get('generated_text', '')
-        response = full_text[len(prompt):].strip() #Fatiamento da resposta, guardando apenas o texto gerado pela IA
-        return response
-    else:
-        print(f'Erro na API: {api_output}')
-        return "Agradecemos o seu contato. A sua mensagem foi recebida."
+1.  **"categoria"**: Classifique o e-mail em "Produtivo" ou "Improdutivo".
+    * **Produtivo**: E-mails que requerem uma ação ou resposta específica (ex.: solicitações de suporte, atualização sobre casos, dúvidas sobre o sistema).
+    * **Improdutivo**: E-mails que não necessitam de uma ação imediata (ex.: mensagens de felicitações, **agradecimentos por um problema já resolvido**, spam, newsletters).
+
+2.  **"resposta_sugerida"**: Gere uma resposta curta e profissional. **IMPORTANTE: Se o e-mail original estiver em um idioma diferente do português, a resposta sugerida DEVE ser nesse mesmo idioma.** Se a categoria for **'Produtivo'**, a sugestão deve ser um **rascunho de resposta para enviar ao cliente**. Se a categoria for **'Improdutivo'**, a sugestão deve ser uma **ação interna para o funcionário** (ex: "Nenhuma ação necessária. Arquivar.").
+
+O e-mail para análise é:
+---
+{text}
+---
+"""
+    try:
+        GEMINI_API_KEY = os.getenv('GOOGLE_API_KEY')
+        
+        print(f'Passo 2: Verificando a API Key: {bool(GEMINI_API_KEY)}')
+        if not GEMINI_API_KEY:
+            raise ValueError('A Key não foi encontrada')
+
+        client = genai.Client(api_key=GEMINI_API_KEY)
+        print('Passo 3: Enviando requisição')
+
+        generate = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+        )
+
+        response = generate.text
+
+        print("--- PASSO 4: Resposta CRUA recebida da API ---")
+        print(response)
+
+        match = re.search(r'\{.*}', response, re.DOTALL)
+        if match:
+            clean_response = match.group(0)
+            return json.loads(clean_response)
+        else:
+            raise ValueError('Nenhum JSON foi encontrado na resposta da API.')
+
+    except Exception as e:
+        print(f'Erro na conexão da API: {e}')
+        return {'error': 'Ocorreu um erro na tentativa de se conectar com a API da IA.'}
