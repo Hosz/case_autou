@@ -7,14 +7,14 @@ import re
 
 load_dotenv()
 
-#Função para classificar o email em produtivo ou improdutivo
+#Função que classifica e gera sugestões de acordo com a classificação
 def email_analysis(text: str) -> dict:
-    print('Passo 1 = analise iniciada.')
+    #Prompt com instruções para a IA do que se deve fazer e como retornar
     prompt = f"""
 Você é um assistente especialista em análise de e-mails para a empresa AutoU.
 Sua tarefa é analisar o e-mail fornecido e retornar um objeto JSON.
 
-Sua resposta DEVE SER APENAS o objeto JSON, sem nenhum texto adicional, explicação ou formatação Markdown. Sua resposta deve começar com {{ e terminar com }}.
+Sua resposta DEVE SER APENAS o objeto JSON, sem nenhum texto adicional, explicação ou formatação Markdown. Sua resposta deve começar com {{{{ e terminar com }}}}.
 
 O objeto JSON deve ter duas chaves: "categoria" e "resposta_sugerida".
 
@@ -28,27 +28,21 @@ O e-mail para análise é:
 ---
 {text}
 ---
-"""
+"""   
     try:
+        #Faz a conexão com a API do Gemini
         GEMINI_API_KEY = os.getenv('GOOGLE_API_KEY')
-        
-        print(f'Passo 2: Verificando a API Key: {bool(GEMINI_API_KEY)}')
         if not GEMINI_API_KEY:
             raise ValueError('A Key não foi encontrada')
-
         client = genai.Client(api_key=GEMINI_API_KEY)
-        print('Passo 3: Enviando requisição')
-
+        
         generate = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=prompt,
         )
-
         response = generate.text
 
-        print("--- PASSO 4: Resposta CRUA recebida da API ---")
-        print(response)
-
+        #Faz a analise do 'response' e formata para JSON separando em começo:'{' e o fim: '}'
         match = re.search(r'\{.*}', response, re.DOTALL)
         if match:
             clean_response = match.group(0)
