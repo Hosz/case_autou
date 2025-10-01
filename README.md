@@ -1,6 +1,6 @@
 # Analisador de E-mails com IA - Case Prático AutoU
 
-![Analisador de E-mails da AutoU](https://i.imgur.com/your-image-link.png) ## 📜 Descrição
+## 📜 Descrição
 
 Este projeto é uma solução full-stack desenvolvida como parte do case prático da AutoU. O objetivo é criar uma aplicação web que utiliza a API de IA do Google (Gemini) para automatizar a leitura e classificação de e-mails, liberando tempo da equipe e otimizando o fluxo de trabalho.
 
