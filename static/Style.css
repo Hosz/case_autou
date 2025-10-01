@@ -1,0 +1,245 @@
+body {
+    font-family: sans-serif;
+    background-color: #d8e0ee;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.container {
+    position: relative;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1 {
+    padding: 1rem;
+    background-color: rgba(163, 174, 185, 0.603);
+    border-radius: 8px;
+    color: #4f4cca;
+    margin-top: 0;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1rem;
+    color: #6c757d;
+    margin: 1.5rem 0;
+}
+
+textarea {
+    width: 95%;
+    height: 180px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #dddfe2;
+    font-size: 1rem;
+    resize: none;
+    overflow: auto;
+    min-height: 180px;
+    max-height: 500px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: block;
+    justify-content: center;
+    align-items: center;
+    margin: 25px auto 0;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#result-container {
+    margin-top: 1.5rem;
+    text-align: left;
+    padding: 1rem;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    white-space: pre-wrap;
+}
+
+
+.loading-bar {
+    height: 10px;
+    width: 250px;
+    margin: 1rem auto;
+    border-radius: 5px;
+
+    background-image: linear-gradient(
+        to right,
+        rgba(0, 123, 255, 0.2) 20%,
+        rgba(0, 123, 255, 0.9) 50%,
+        rgba(0, 123, 255, 0.2) 80%
+    );
+    background-size: 200% 100%;
+
+    animation: loading-move 1.5s linear infinite;
+}
+
+@keyframes loading-move {
+    from {
+        background-position: 150% 0;
+    }
+    to {
+        background-position: -50% 0;
+    }
+}
+
+.category-badge {
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
+.badge-produtivo {
+    background-color: #28a745;
+}
+
+.badge-improdutivo {
+    background-color: #dc3545;
+}
+
+.result-item {
+    margin-bottom: 0.5px;
+    display: flex;
+    align-items: center;
+}
+
+.result-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.suggested-response {
+    background-color: #ccdff1;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.tab-buttons {
+    display: flex;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 1rem;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #6c757d;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+}
+
+.tab-btn.active {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+}
+
+.tab-content {
+    padding: 1rem 0;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+.drop-zone__input {
+    display: none;
+}
+
+.drop-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    color: #a0a0a0;
+
+    width: 95%;
+    min-height: 150px;
+    padding: 25px;
+    border: 2px dashed #a0a0a0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.drop-zone:hover {
+    background-color: #f0f2f5;
+}
+
+.drop-zone--over {
+    border-style: solid;
+    border-color: #007bff;
+    background-color: #e9ecef;
+}
+
+#copy-btn {
+    background-color: #e9ecef;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+}
+
+#copy-btn:hover {
+    background-color: #dee2e6;
+}
+
+.response-container {
+    position: relative;
+    margin-top: 2px;
+}
+
+.result-item-container {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+}
+
+.result-item-container:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
